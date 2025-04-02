@@ -10,7 +10,7 @@ class SettingsSeeder extends Seeder
     {
         $data = [
             'setting_name' => 'last_shortcode',
-            'setting_value' => '',
+            'setting_value' => '000',
         ];
 
         $this->db->table('settings')->insert($data);
