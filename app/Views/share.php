@@ -8,7 +8,7 @@
 <!-- content -->
 <?= $this->section('content') ?>
 
-<div class="flex gap-3 p-4">
+<div class="gap-3 p-4 md:flex">
 
     <div class="flex flex-col grow">
 
@@ -31,13 +31,12 @@
             </button>
         </div>
 
-
         <div class="mt-3">
             <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Long url</label>
             <input type="text" id="small-input" value="<?= $link->content ?>" disabled readonly class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
         </div>
 
-        <div class="mt-3">
+        <div class="mt-3 flex">
 
             <button id="share-button" type="button" class="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -67,9 +66,10 @@
         </div>
     </div>
 
-
-    <div class="bg-white rounded-md p-2" style="width: fit-content;">
-        <canvas id="canvas"></canvas>
+    <div class="flex justify-center mt-3 md:mt-0">
+        <div class="bg-white rounded-md p-2" style="width: fit-content;">
+            <canvas id="qr-canvas"></canvas>
+        </div>
     </div>
 
 </div>
@@ -104,20 +104,18 @@
     };
 
     const btn = document.querySelector("#share-button");
-    // const resultPara = document.querySelector(".result");
 
     btn.addEventListener("click", async () => {
         try {
             await navigator.share(shareData);
-            // resultPara.textContent = "MDN shared successfully";
         } catch (err) {
-            // resultPara.textContent = `Error: ${err}`;
+            console.log(`Error: ${err}`);
         }
     });
 </script>
 
 <script>
-    QRCode.toCanvas(document.getElementById('canvas'), '<?= base_url($link->shortcode) ?>', {
+    QRCode.toCanvas(document.getElementById('qr-canvas'), '<?= base_url($link->shortcode) ?>', {
         width: 200,
         margin: 0.3,
         color: {
