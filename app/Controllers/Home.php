@@ -51,11 +51,18 @@ class Home extends BaseController
 
         $rules = [
             'url' => 'required|valid_url_strict[http,https]',
+            'shortcode' => 'permit_empty|alpha_dash|max_length[50]|min_length[4]|is_unique[links.shortcode]',
+        ];
+
+        $messages = [
+            'shortcode' => [
+                'is_unique' => 'The shortcode already exists. Try another one.',
+            ],
         ];
 
         $data = $this->request->getPost(array_keys($rules));
 
-        if (! $this->validateData($data, $rules))
+        if (! $this->validateData($data, $rules, $messages))
             return redirect()->to(base_url('/'))->withInput();
 
 
@@ -63,7 +70,11 @@ class Home extends BaseController
 
         $url = $validData['url'];
 
-        $next_shortcode = $this->getNextIDFromDB();
+        if (isset($validData['shortcode']) && $validData['shortcode'] != "") {
+            $next_shortcode = $validData['shortcode'];
+        } else {
+            $next_shortcode = $this->getNextIDFromDB();
+        }
 
         $db = \Config\Database::connect();
 
