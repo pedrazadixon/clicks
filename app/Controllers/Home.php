@@ -80,7 +80,7 @@ class Home extends BaseController
         $builder = $db->table('links');
 
         $secret = 'dIxOnPvmT4GwQtpcqs1SgJCkMlaYBuRKmiWAbZ358fLjU62EF7HV0z9heryDiXoN';
-        $converter = new Base62Converter($secret, 2);
+        $converter = new Base62Converter($secret, 4);
 
         // Usamos una transacción por seguridad
         $db->transStart();
