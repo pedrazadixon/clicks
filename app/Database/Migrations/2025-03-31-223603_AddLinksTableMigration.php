@@ -16,7 +16,7 @@ class AddLinksTableMigration extends Migration
                 'auto_increment' => true,
                 'unsigned' => true,
             ],
-            'shortcode varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL',
+            'shortcode varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL',
             'type' => [
                 'type' => 'ENUM',
                 'constraint' => ['url', 'text'],
@@ -24,6 +24,10 @@ class AddLinksTableMigration extends Migration
             ],
             'content' => [
                 'type' => 'TEXT',
+            ],
+            'is_custom_shortcode' => [
+                'type' => 'BOOLEAN',
+                'default' => false,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
