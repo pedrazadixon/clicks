@@ -19,6 +19,11 @@
                 Share a note
             </button>
         </li>
+        <li class="me-2" role="presentation">
+            <button class="inline-block cursor-pointer p-4 border-b-2 rounded-t-lg" data-tabs-target="#link-group-tab" type="button" role="tab" aria-controls="link-group-tab" aria-selected="false">
+                Link group
+            </button>
+        </li>
     </ul>
 </div>
 
@@ -93,6 +98,10 @@
     </div>
 
     <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="qr-tab" role="tabpanel" aria-labelledby="qr-tab">
+
+        <div class="dark:text-gray-200" role="alert">Commig soon...</div>
+
+        <?php /*
         <form>
             <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
                 Create a QR Code
@@ -109,9 +118,15 @@
                 Create
             </button>
         </form>
+        */ ?>
+
     </div>
 
     <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="note-tab" role="tabpanel" aria-labelledby="note-tab">
+
+        <div class="dark:text-gray-200" role="alert">Commig soon...</div>
+
+        <?php /*
         <form>
             <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
                 Share a note
@@ -125,6 +140,30 @@
                 Share
             </button>
         </form>
+        */ ?>
+
+    </div>
+
+    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="link-group-tab" role="tabpanel" aria-labelledby="link-group-tab">
+
+        <div class="dark:text-gray-200" role="alert">Commig soon...</div>
+
+        <?php /*
+        <form>
+            <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                Share a note
+            </label>
+            <div class="relative mb-3">
+
+                <textarea id="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+
+            </div>
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Share
+            </button>
+        </form>
+        */ ?>
+
     </div>
 
 </div>
