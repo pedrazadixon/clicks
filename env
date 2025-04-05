@@ -70,3 +70,9 @@
 
 # Colon separated list of excluded shortcodes.
 EXCLUDED_SHORTCODES=app,s,api
+
+# Base62 secret key for generating shortcodes.
+# This should be a random string of at least 62 characters.
+# Only use alphanumeric characters (A-Z, a-z, 0-9).
+# Example: ne4N3thKZMIiRUvcYz9sw2gJWSCQq5dfEpDOjGmku8AXBPFaTr0bxH7yloVL16
+BASE62_SECRET=

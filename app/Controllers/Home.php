@@ -79,8 +79,11 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('links');
 
-        $secret = 'dIxOnPvmT4GwQtpcqs1SgJCkMlaYBuRKmiWAbZ358fLjU62EF7HV0z9heryDiXoN';
-        $converter = new Base62Converter($secret, 4);
+        $secret = getenv('BASE62_SECRET');
+        $converter = new Base62Converter([
+            'Secrect' => $secret,
+            'CodeLength' => 4,
+        ]);
 
         // Usamos una transacción por seguridad
         $db->transStart();

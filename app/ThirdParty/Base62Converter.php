@@ -2,32 +2,29 @@
 
 namespace App\ThirdParty;
 
-use Exception;
-
+/**
+ * Base62Converter
+ */
 class Base62Converter
 {
-    public string $base62CharSet; // Cadena de caracteres en "orden mezclado"
-    public int $codeLength; // Longitud fija de la "clave corta"
-
-    public function __construct(string $secret, int $codeLength)
-    {
-        $this->base62CharSet = $secret;
-        $this->codeLength = $codeLength;
-    }
+    public string $base62CharSet;
+    public int $codeLength;
 
     /**
-     * Calcula el valor máximo según la longitud de la clave (codeLength).
-     * En el algoritmo original se usa: 
-     *   max = (62^codeLength) - 1 -> valor con cierto número de dígitos.
+     * Constructor
+     * 
+     * @param array $options Configuration options
      */
-    private function getMaxValue(): int
+    public function __construct(array $options)
     {
-        return (int)(pow(62, $this->codeLength) - 1);
+        $this->base62CharSet = $options['Secrect'];
+        $this->codeLength = $options['CodeLength'];
     }
 
     /**
-     * Obtiene la longitud de ceros para rellenar.
-     * Coincide con la cantidad de dígitos en getMaxValue().
+     * Get the length of zeros to pad
+     * 
+     * @return int
      */
     private function getZeroLength(): int
     {
@@ -35,96 +32,119 @@ class Base62Converter
     }
 
     /**
-     * 1) Rellenar el id a la izquierda con ceros hasta getZeroLength().
-     * 2) Convertir ese número decimal invertido a base62.
-     * 3) Rellenar a la izquierda (si es necesario) hasta $codeLength 
-     *    con el primer caracter del set base62.
+     * Get maximum value for the current code length
+     * 
+     * @return int
+     */
+    private function getMaxValue(): int
+    {
+        $max = pow(62, $this->codeLength) - 1;
+        return pow(10, strlen((string)$max) - 1) - 1;
+    }
+
+    /**
+     * Confuse an ID to create a short code
+     * 1. Pad the ID with leading zeros
+     * 2. Reverse the digits
+     * 3. Convert the reversed decimal to base62
+     * 
+     * @param int $id The ID to confuse
+     * @return string The confused short code
+     * @throws \Exception If ID exceeds maximum value
      */
     public function confuse(int $id): string
     {
-        $maxValue = $this->getMaxValue();
-        if ($id > $maxValue) {
-            throw new Exception("El valor $id excede el máximo permitido ($maxValue).", 5);
+
+        while ($id > $this->getMaxValue()) {
+            $this->codeLength++;
         }
 
-        // 1) Rellenar a la izquierda con ceros
-        $zeroLength = $this->getZeroLength();
-        $padded = str_pad((string)$id, $zeroLength, '0', STR_PAD_LEFT);
+        // Pad with zeros and reverse
+        $paddedId = str_pad((string)$id, $this->getZeroLength(), '0', STR_PAD_LEFT);
+        $reversedId = intval(strrev($paddedId));
 
-        // 2) Convertir a base62 con el set custom
-        $confuseId = (int)$padded; // parseamos a entero
-        $base62Str = $this->encode($confuseId);
+        // Encode to base62
+        $base62Str = $this->encode($reversedId);
 
-        // 3) Rellenar con el primer carácter de la cadena base62
+        // Pad with the first character of the charset if needed
         return str_pad($base62Str, $this->codeLength, $this->base62CharSet[0], STR_PAD_LEFT);
     }
 
     /**
-     * 1) Decodificar la cadena base62 custom a un número decimal.
-     * 2) Rellenar con ceros a la izquierda hasta getZeroLength().
-     * 3) Obtener el número original.
+     * Recover the original ID from a confused short code
+     * 1. Convert base62 to decimal (gets the reversed ID)
+     * 2. Reverse the digits to get original ID
+     * 
+     * @param string $key The confused short code
+     * @return int The recovered ID
      */
     public function recoverConfuse(string $key): int
     {
-        if (strlen($key) !== $this->codeLength) {
-            // En el código C# retorna 0 o lanza excepción. Se puede manejar a conveniencia.
+        if (strlen($key) != $this->codeLength) {
             return 0;
         }
 
         $confuseId = $this->decode($key);
+        $reversedId = str_pad((string)$confuseId, $this->getZeroLength(), '0', STR_PAD_LEFT);
+        $id = intval(strrev($reversedId));
 
-        $id = (int)$confuseId; // Ya es el ID
-
-        // Validar también que no sea mayor al máximo
-        if ($id > $this->getMaxValue()) {
-            return 0;
-        }
-        return $id;
+        return $id > $this->getMaxValue() ? 0 : $id;
     }
 
     /**
-     * Convierte un entero decimal a base62 utilizando $this->base62CharSet.
+     * Convert decimal to base62
+     * 
+     * @param int $value The decimal value
+     * @return string The base62 string
+     * @throws \ArgumentOutOfRangeException If value is negative
      */
-    private function encode(int $value): string
+    public function encode(int $value): string
     {
         if ($value < 0) {
-            throw new Exception("El valor debe ser mayor o igual a 0");
+            throw new \InvalidArgumentException("Value must be greater than or equal to zero");
         }
+
         $result = '';
         do {
-            $digit = $value % 62;
-            $result = $this->base62CharSet[$digit] . $result;
-            $value = (int)($value / 62);
+            $result = $this->base62CharSet[$value % 62] . $result;
+            $value = intdiv($value, 62);
         } while ($value > 0);
 
         return $result;
     }
 
     /**
-     * Convierte una cadena base62 (con el set custom) a un número decimal.
+     * Convert base62 to decimal
+     * 
+     * @param string $value The base62 string
+     * @return int The decimal value
+     * @throws \InvalidArgumentException If the input contains invalid characters
      */
-    private function decode(string $value): int
+    public function decode(string $value): int
     {
-        $length = strlen($value);
         $result = 0;
-        for ($i = 0; $i < $length; $i++) {
-            $pos = strpos($this->base62CharSet, $value[$i]);
-            if ($pos === false) {
-                throw new Exception("Carácter inválido en la cadena base62: " . $value[$i]);
+        for ($i = 0; $i < strlen($value); $i++) {
+            $power = strlen($value) - $i - 1;
+            $digit = strpos($this->base62CharSet, $value[$i]);
+
+            if ($digit === false) {
+                throw new \InvalidArgumentException("Invalid character in base62 string");
             }
-            $power = $length - $i - 1;
-            $result += $pos * (int)pow(62, $power);
+
+            $result += $digit * pow(62, $power);
         }
+
         return $result;
     }
 
     /**
-     * Genera una clave "secreta" de 62 caracteres que contendrá 0-9, a-z, A-Z en orden aleatorio.
+     * Generate a random base62 character set
+     * 
+     * @return string The generated secret
      */
     public static function generateSecret(): string
     {
-        // Conjunto de 62 caracteres (10 dígitos + 26 minúsculas + 26 mayúsculas)
-        $chars = array_merge(range('0', '9'), range('A', 'Z'), range('a', 'z'));
+        $chars = explode(',', '0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z');
         shuffle($chars);
         return implode('', $chars);
     }
