@@ -18,14 +18,49 @@ class Home extends BaseController
         $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
         $results = $query->getResult();
 
+        if (count($results) == 0)
+            return redirect(base_url('/'))->with('message', 'Link not found');
+
+        $url = $results[0]->content;
+
+        if (!is_null($results[0]->password))
+            return redirect()->to(base_url('p/' . $shortcode));
+
+        return redirect()->to($url);
+    }
+
+    public function protected($shortcode)
+    {
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
+        $results = $query->getResult();
+
         if (count($results) == 0) {
             $this->session->setFlashdata('message', 'Link not found.');
             return redirect()->to(base_url('/'));
         }
 
-        $url = $results[0]->content;
+        $link = $results[0];
 
-        return redirect()->to($url);
+        if (empty($link->password))
+            return redirect()->to($link->content);
+
+        if ($this->request->is('post')) {
+
+            $password = $this->request->getPost('password');
+
+            if (password_verify($password, $link->password)) {
+                return redirect()->to($link->content);
+            } else {
+                return redirect()->back()->with('message', 'Incorrect password.');
+            }
+        }
+
+        helper(['form']);
+
+        return view('protected', [
+            'link' => $link,
+        ]);
     }
 
     public function share($shortcode)
@@ -54,6 +89,11 @@ class Home extends BaseController
         $rules = [
             'url' => 'required|valid_url_strict[http,https]',
             'shortcode' => 'permit_empty|alpha_dash|max_length[50]|min_length[4]|is_unique[links.shortcode]',
+            'password' => 'permit_empty|min_length[4]|max_length[150]',
+            'expiration-type' => 'permit_empty|in_list[time,visits]',
+            'expiration-time' => 'permit_empty|integer',
+            'expiration-unit' => 'permit_empty|in_list[minutes,hours,days,weeks,months]',
+            'expiration-visits' => 'permit_empty|integer',
         ];
 
         $messages = [
@@ -75,7 +115,8 @@ class Home extends BaseController
         $customShortcode = $validData['shortcode'] ?? null;
 
         $db = \Config\Database::connect();
-        $builder = $db->table('links');
+
+        $linksModel = model('LinksModel');
 
         $secret = getenv('BASE62_SECRET');
         $converter = new Base62Converter([
@@ -91,7 +132,11 @@ class Home extends BaseController
             'is_custom_shortcode' => ! empty($customShortcode),
         ];
 
-        $builder->insert($newData);
+        if (! empty($validData['password']))
+            $newData['password'] = password_hash($validData['password'], PASSWORD_BCRYPT);
+
+
+        $linksModel->insert($newData);
 
         $newId = $db->insertID();
 
@@ -132,8 +177,13 @@ class Home extends BaseController
         }
 
         if ($finalShortcode) {
-            $builder->where('id', $newId)
-                ->update(['shortcode' => $finalShortcode]);
+            $linksModel
+                ->where('id', $newId)
+                ->set([
+                    'shortcode' => $finalShortcode,
+                    'updated_at' => null,
+                ])
+                ->update();
         }
 
         $db->transComplete();

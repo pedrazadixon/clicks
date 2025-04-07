@@ -29,15 +29,22 @@ class AddLinksTableMigration extends Migration
                 'type' => 'BOOLEAN',
                 'default' => false,
             ],
+            'password' => [
+                'type' => 'VARCHAR',
+                'constraint' => 60,
+                'null' => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => false,
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
             ],
             'updated_at' => [
                 'type' => 'DATETIME',
-                'null' => false,
-                'default' => new RawSql('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                'null' => true,
+            ],
+            'deleted_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
             ],
         ]);
 
