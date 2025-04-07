@@ -63,7 +63,7 @@
                     </label>
                     <div class="relative mb-4">
                         <div class="flex">
-                            <?php $shortcode_prefix = strlen(base_url()) - 2 ?>
+                            <?php $shortcode_prefix = strlen(base_url()) - 1 ?>
                             <input type="text" value="<?= base_url() ?>" style="width: <?= $shortcode_prefix ?>ch;" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-s-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled />
                             <input type="text" autocomplete="off" name="shortcode" value="<?= set_value('shortcode') ?>" placeholder="my-custom-text..." minlength="4" maxlength="50" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-e-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-2 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                         </div>
