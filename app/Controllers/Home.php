@@ -19,13 +19,20 @@ class Home extends BaseController
         $results = $query->getResult();
 
         if (count($results) == 0)
-            return redirect(base_url('/'))->with('message', 'Link not found');
+            return redirect('/')->with('message', 'Link not found');
 
-        $url = $results[0]->content;
-
+        // check if the link has a password
         if (!is_null($results[0]->password))
-            return redirect()->to(base_url('p/' . $shortcode));
+            return redirect()->to('p/' . $shortcode);
 
+        // check if the link is expired
+        // TO DO
+
+        return $this->saveVisitAndRedirect($results[0]->content);
+    }
+
+    public function saveVisitAndRedirect($url)
+    {
         return redirect()->to($url);
     }
 
@@ -35,22 +42,21 @@ class Home extends BaseController
         $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
         $results = $query->getResult();
 
-        if (count($results) == 0) {
-            $this->session->setFlashdata('message', 'Link not found.');
-            return redirect()->to(base_url('/'));
-        }
+        if (count($results) == 0)
+            return redirect()->to('/')->with('message', 'Link not found.');
+
 
         $link = $results[0];
 
         if (empty($link->password))
-            return redirect()->to($link->content);
+            return $this->saveVisitAndRedirect($link->content);
 
         if ($this->request->is('post')) {
 
             $password = $this->request->getPost('password');
 
             if (password_verify($password, $link->password)) {
-                return redirect()->to($link->content);
+                return $this->saveVisitAndRedirect($link->content);
             } else {
                 return redirect()->back()->with('message', 'Incorrect password.');
             }
@@ -69,10 +75,9 @@ class Home extends BaseController
         $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
         $results = $query->getResult();
 
-        if (count($results) == 0) {
-            $this->session->setFlashdata('message', 'Link not found.');
-            return redirect()->to(base_url('/'));
-        }
+        if (count($results) == 0)
+            return redirect()->to('/')->with('message', 'Link not found.');
+
 
         $link = $results[0];
 
@@ -90,10 +95,10 @@ class Home extends BaseController
             'url' => 'required|valid_url_strict[http,https]',
             'shortcode' => 'permit_empty|alpha_dash|max_length[50]|min_length[4]|is_unique[links.shortcode]',
             'password' => 'permit_empty|min_length[4]|max_length[150]',
-            'expiration-type' => 'permit_empty|in_list[time,visits]',
-            'expiration-time' => 'permit_empty|integer',
-            'expiration-unit' => 'permit_empty|in_list[minutes,hours,days,weeks,months]',
-            'expiration-visits' => 'permit_empty|integer',
+            'expiration_type' => 'permit_empty|in_list[time,visits]',
+            'expiration_after' => 'permit_empty|integer',
+            'expiration_unit' => 'permit_empty|in_list[minutes,hours,days,weeks,months]',
+            'expiration_visits' => 'permit_empty|integer',
         ];
 
         $messages = [
@@ -105,12 +110,10 @@ class Home extends BaseController
         $data = $this->request->getPost(array_keys($rules));
 
         if (! $this->validateData($data, $rules, $messages))
-            return redirect()->to(base_url('/'))->withInput();
+            return redirect()->to('/')->withInput();
 
 
         $validData = $this->validator->getValidated();
-
-        $url = $validData['url'];
 
         $customShortcode = $validData['shortcode'] ?? null;
 
@@ -127,7 +130,7 @@ class Home extends BaseController
         $db->transStart();
 
         $newData = [
-            'content' => $url,
+            'content' => $validData['url'],
             'shortcode' => null,
             'is_custom_shortcode' => ! empty($customShortcode),
         ];
@@ -135,6 +138,18 @@ class Home extends BaseController
         if (! empty($validData['password']))
             $newData['password'] = password_hash($validData['password'], PASSWORD_BCRYPT);
 
+        if (! empty($validData['expiration_type'])) {
+            $newData['expiration_type'] = $validData['expiration_type'];
+
+            if ($validData['expiration_type'] === 'time') {
+                $newData['expiration_after'] = $validData['expiration_after'];
+                $newData['expiration_unit'] = $validData['expiration_unit'];
+            }
+
+            if ($validData['expiration_type'] === 'visits') {
+                $newData['expiration_after'] = $validData['expiration_visits'];
+            }
+        }
 
         $linksModel->insert($newData);
 
@@ -193,6 +208,6 @@ class Home extends BaseController
             return redirect()->back()->with('message', 'Error al generar el link 3');
         }
 
-        return redirect()->to(base_url('s/' . $finalShortcode));
+        return redirect()->to('s/' . $finalShortcode);
     }
 }

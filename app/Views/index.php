@@ -47,7 +47,6 @@
         <div data-accordion="collapse">
             <h2 id="accordion-collapse-heading-1">
                 <?php $expanded = ! empty(array_diff(array_keys(validation_errors()), ['url'])) ? 'true' : 'false'; ?>
-                <?php // $expanded = 'true'; ?>
                 <button type="button" class="flex items-center w-full text-sm font-medium rtl:text-right text-gray-500 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="<?= $expanded ?>" aria-controls="accordion-collapse-body-1">
                     <span>Customize your link</span>
                     <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -83,32 +82,32 @@
                     </label>
                     <div class="relative mb-4">
                         <div class="flex">
-                            <select name="expiration-type" id="expiration-type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select name="expiration_type" id="expiration_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="" selected>No expiration</option>
-                                <option value="time" <?= set_value('expiration-type') == 'time' ? 'selected' : '' ?>>Time</option>
-                                <option value="visits" <?= set_value('expiration-type') == 'visits' ? 'selected' : '' ?>>Visits</option>
+                                <option value="time" <?= set_value('expiration_type') == 'time' ? 'selected' : '' ?>>Time</option>
+                                <option value="visits" <?= set_value('expiration_type') == 'visits' ? 'selected' : '' ?>>Visits</option>
                             </select>
                         </div>
 
                         <div class="hidden flex mt-2 max-w-sm gap-2" id="expiration-time">
-                            <select name="expiration-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select name="expiration_after" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <?php foreach ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 24, 48, 72] as $value): ?>
-                                    <option value="<?= $value ?>" <?= set_value('expiration-time') == $value ? 'selected' : '' ?>><?= $value ?></option>
+                                    <option value="<?= $value ?>" <?= set_value('expiration_after') == $value ? 'selected' : '' ?>><?= $value ?></option>
                                 <?php endforeach ?>
                             </select>
 
-                            <select name="expiration-unit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="minutes" <?= set_value('expiration-unit') == 'minutes' ? 'selected' : '' ?>>Minutes</option>
-                                <option value="hours" <?= set_value('expiration-unit') == 'hours' ? 'selected' : '' ?>>Hours</option>
-                                <option value="days" <?= set_value('expiration-unit') == 'days' || empty(set_value('expiration-unit')) ? 'selected' : '' ?>>Days</option>
-                                <option value="weeks" <?= set_value('expiration-unit') == 'weeks' ? 'selected' : '' ?>>Weeks</option>
-                                <option value="months" <?= set_value('expiration-unit') == 'months' ? 'selected' : '' ?>>Months</option>
+                            <select name="expiration_unit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="minutes" <?= set_value('expiration_unit') == 'minutes' ? 'selected' : '' ?>>Minutes</option>
+                                <option value="hours" <?= set_value('expiration_unit') == 'hours' ? 'selected' : '' ?>>Hours</option>
+                                <option value="days" <?= set_value('expiration_unit') == 'days' || empty(set_value('expiration_unit')) ? 'selected' : '' ?>>Days</option>
+                                <option value="weeks" <?= set_value('expiration_unit') == 'weeks' ? 'selected' : '' ?>>Weeks</option>
+                                <option value="months" <?= set_value('expiration_unit') == 'months' ? 'selected' : '' ?>>Months</option>
                             </select>
 
                         </div>
 
                         <div class="hidden flex mt-2 max-w-sm gap-2" id="expiration-visits">
-                            <input type="number" name="expiration-visits" min="1" value="<?= empty(set_value('expiration-visits')) ? 3 : set_value('expiration-visits') ?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm w-full rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                            <input type="number" name="expiration_visits" min="1" value="<?= empty(set_value('expiration_visits')) ? 3 : set_value('expiration_visits') ?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm w-full rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                             <input type="text" value="visits" disabled class="bg-gray-50 border border-gray-300 text-gray-900 text-sm w-full rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                         </div>
 
@@ -217,15 +216,15 @@
         document.getElementById("expiration-time").classList.add("hidden");
         document.getElementById("expiration-visits").classList.add("hidden");
 
-        if (document.getElementById("expiration-type").value == "time")
+        if (document.getElementById("expiration_type").value == "time")
             document.getElementById("expiration-time").classList.remove("hidden");
 
-        if (document.getElementById("expiration-type").value == "visits")
+        if (document.getElementById("expiration_type").value == "visits")
             document.getElementById("expiration-visits").classList.remove("hidden");
 
     }
 
-    document.getElementById("expiration-type").addEventListener("change", () => {
+    document.getElementById("expiration_type").addEventListener("change", () => {
         expirationHandler();
     });
 

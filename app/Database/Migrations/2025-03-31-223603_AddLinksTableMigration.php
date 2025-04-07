@@ -29,6 +29,20 @@ class AddLinksTableMigration extends Migration
                 'type' => 'BOOLEAN',
                 'default' => false,
             ],
+            'expiration_type' => [
+                'type' => 'ENUM',
+                'constraint' => ['time', 'visits'],
+                'null' => true,
+            ],
+            'expiration_unit' => [
+                'type' => 'ENUM',
+                'constraint' => ['minutes', 'hours', 'days', 'weeks', 'months'],
+                'null' => true,
+            ],
+            'expiration_after' => [
+                'type' => 'INT',
+                'null' => true,
+            ],
             'password' => [
                 'type' => 'VARCHAR',
                 'constraint' => 60,
