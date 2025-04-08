@@ -40,12 +40,37 @@ class Home extends BaseController
         return redirect()->to($link->content);
     }
 
+    private function getIpFromServer()
+    {
+        if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+            if (filter_var(explode(',', $_SERVER['HTTP_X_REAL_IP'])[0], FILTER_VALIDATE_IP))
+                return explode(',', $_SERVER['HTTP_X_REAL_IP'])[0];
+        }
+
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            if (filter_var(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0], FILTER_VALIDATE_IP))
+                return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+        }
+
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            if (filter_var(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'])[0], FILTER_VALIDATE_IP))
+                return explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'])[0];
+        }
+
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            if (filter_var(explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'])[0], FILTER_VALIDATE_IP))
+                return explode(',', $_SERVER['HTTP_CF_CONNECTING_IP'])[0];
+        }
+
+        return $_SERVER['REMOTE_ADDR'] ?? null;
+    }
+
     private function saveVisit($link)
     {
         $dd = new DeviceDetector($_SERVER['HTTP_USER_AGENT']);
         $dd->parse();
 
-        $ipAddress = $this->request->getIPAddress();
+        $ipAddress = $this->getIpFromServer();
         $osName = empty($dd->getOs()) ? 'Unknown' : $dd->getOs()['name'] ?? 'Unknown';
         $deviceName = empty($dd->getDeviceName()) ? 'Unknown' : $dd->getDeviceName();
         $client = empty($dd->getClient()) ? 'Unknown' : $dd->getClient()['name'] ?? 'Unknown';
