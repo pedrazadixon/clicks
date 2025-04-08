@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\ThirdParty\Base62Converter;
+use DeviceDetector\DeviceDetector;
+use MaxMind\Db\Reader;
 
 class Home extends BaseController
 {
@@ -28,12 +30,80 @@ class Home extends BaseController
         // check if the link is expired
         // TO DO
 
-        return $this->saveVisitAndRedirect($results[0]->content);
+        return $this->saveVisitAndRedirect($results[0]);
     }
 
-    public function saveVisitAndRedirect($url)
+    public function saveVisitAndRedirect($link)
     {
-        return redirect()->to($url);
+        $this->saveVisit($link);
+
+        return redirect()->to($link->content);
+    }
+
+    private function saveVisit($link)
+    {
+        $dd = new DeviceDetector($_SERVER['HTTP_USER_AGENT']);
+        $dd->parse();
+
+        $ipAddress = $this->request->getIPAddress();
+        $osName = empty($dd->getOs()) ? 'Unknown' : $dd->getOs()['name'] ?? 'Unknown';
+        $deviceName = empty($dd->getDeviceName()) ? 'Unknown' : $dd->getDeviceName();
+        $client = empty($dd->getClient()) ? 'Unknown' : $dd->getClient()['name'] ?? 'Unknown';
+        $referer = $_SERVER['HTTP_REFERER'] ?? null;
+
+        $reader = new Reader(APPPATH . 'ThirdParty/GeoLite2-Country.mmdb');
+        $ip_info = $reader->get($this->request->getIPAddress());
+        $reader->close();
+
+        $country = $ip_info['country']['iso_code'] ?? null;
+        $continent = $ip_info['continent']['code'] ?? null;
+
+        $visitsModel = model('VisitsModel');
+
+        // save visit log
+        $result = $visitsModel->insert([
+            'link_id' => $link->id,
+            'ip_address' => $ipAddress,
+            'continent_code' => $continent,
+            'country_code' => $country,
+            'browser' => $client,
+            'device' => $deviceName,
+            'os' => $osName,
+            'referer' => $referer,
+        ]);
+
+        // save vistit in link
+        $linksModel = model('LinksModel');
+        $linksModel->where('id', $link->id)
+            ->set([
+                'visits' => $link->visits + 1,
+                'last_visit' => date('Y-m-d H:i:s'),
+                'updated_at' => null,
+            ])
+            ->update();
+
+
+        // save daily visits
+        $visitsDailyModel = model('VisitsDailyModel');
+
+        $total_visits_today = $visitsDailyModel
+            ->where('link_id', $link->id)
+            ->where('date', date('Y-m-d'))
+            ->first();
+
+        if ($total_visits_today) {
+            $visitsDailyModel
+                ->where('link_id', $link->id)
+                ->where('date', date('Y-m-d'))
+                ->set(['visits' => $total_visits_today['visits'] + 1])
+                ->update();
+        } else {
+            $visitsDailyModel->insert([
+                'link_id' => $link->id,
+                'date' => date('Y-m-d'),
+                'visits' => 1,
+            ]);
+        }
     }
 
     public function protected($shortcode)
