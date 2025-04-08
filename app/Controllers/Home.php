@@ -28,7 +28,18 @@ class Home extends BaseController
             return redirect()->to('p/' . $shortcode);
 
         // check if the link is expired
-        // TO DO
+        if ($results[0]->expiration_type == 'time') {
+            $expirationDate = date('Y-m-d H:i:s', strtotime($results[0]->created_at . ' + ' . $results[0]->expiration_after . ' ' . $results[0]->expiration_unit));
+            if (date('Y-m-d H:i:s') > $expirationDate) {
+                return redirect()->to('/')->with('message', 'Link expired');
+            }
+        }
+
+        if ($results[0]->expiration_type == 'visits') {
+            if ($results[0]->visits >= $results[0]->expiration_after) {
+                return redirect()->to('/')->with('message', 'Link expired');
+            }
+        }
 
         return $this->saveVisitAndRedirect($results[0]);
     }
