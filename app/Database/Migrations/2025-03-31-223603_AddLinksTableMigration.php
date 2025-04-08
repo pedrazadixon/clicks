@@ -48,6 +48,14 @@ class AddLinksTableMigration extends Migration
                 'constraint' => 60,
                 'null' => true,
             ],
+            'visits' => [
+                'type' => 'INT',
+                'default' => 0,
+            ],
+            'last_visit' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => false,
