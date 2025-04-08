@@ -77,7 +77,7 @@ class Home extends BaseController
         $referer = $_SERVER['HTTP_REFERER'] ?? null;
 
         $reader = new Reader(APPPATH . 'ThirdParty/GeoLite2-Country.mmdb');
-        $ip_info = $reader->get($this->request->getIPAddress());
+        $ip_info = $reader->get($ipAddress);
         $reader->close();
 
         $country = $ip_info['country']['iso_code'] ?? null;
