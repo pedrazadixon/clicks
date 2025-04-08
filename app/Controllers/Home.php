@@ -16,39 +16,38 @@ class Home extends BaseController
 
     public function redirectOrShow($shortcode)
     {
-        $db = \Config\Database::connect();
-        $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
-        $results = $query->getResult();
+        $linksModel = model('LinksModel');
+        $link = $linksModel->where('shortcode', $shortcode)->first();
 
-        if (count($results) == 0)
+        if (is_null($link))
             return redirect('/')->with('message', 'Link not found');
 
         // check if the link has a password
-        if (!is_null($results[0]->password))
+        if (!is_null($link['password']))
             return redirect()->to('p/' . $shortcode);
 
         // check if the link is expired
-        if ($results[0]->expiration_type == 'time') {
-            $expirationDate = date('Y-m-d H:i:s', strtotime($results[0]->created_at . ' + ' . $results[0]->expiration_after . ' ' . $results[0]->expiration_unit));
+        if ($link['expiration_type'] == 'time') {
+            $expirationDate = date('Y-m-d H:i:s', strtotime($link['created_at'] . ' + ' . $link['expiration_after'] . ' ' . $link['expiration_unit']));
             if (date('Y-m-d H:i:s') > $expirationDate) {
                 return redirect()->to('/')->with('message', 'Link expired');
             }
         }
 
-        if ($results[0]->expiration_type == 'visits') {
-            if ($results[0]->visits >= $results[0]->expiration_after) {
+        if ($link['expiration_type'] == 'visits') {
+            if ($link['visits'] >= $link['expiration_after']) {
                 return redirect()->to('/')->with('message', 'Link expired');
             }
         }
 
-        return $this->saveVisitAndRedirect($results[0]);
+        return $this->saveVisitAndRedirect($link);
     }
 
     public function saveVisitAndRedirect($link)
     {
         $this->saveVisit($link);
 
-        return redirect()->to($link->content);
+        return redirect()->to($link['content']);
     }
 
     private function getIpFromServer()
@@ -97,8 +96,8 @@ class Home extends BaseController
         $visitsModel = model('VisitsModel');
 
         // save visit log
-        $result = $visitsModel->insert([
-            'link_id' => $link->id,
+        $visitsModel->insert([
+            'link_id' => $link['id'],
             'ip_address' => $ipAddress,
             'continent_code' => $continent,
             'country_code' => $country,
@@ -110,9 +109,9 @@ class Home extends BaseController
 
         // save vistit in link
         $linksModel = model('LinksModel');
-        $linksModel->where('id', $link->id)
+        $linksModel->where('id', $link['id'])
             ->set([
-                'visits' => $link->visits + 1,
+                'visits' => $link['visits'] + 1,
                 'last_visit' => date('Y-m-d H:i:s'),
                 'updated_at' => null,
             ])
@@ -123,19 +122,19 @@ class Home extends BaseController
         $visitsDailyModel = model('VisitsDailyModel');
 
         $total_visits_today = $visitsDailyModel
-            ->where('link_id', $link->id)
+            ->where('link_id', $link['id'])
             ->where('date', date('Y-m-d'))
             ->first();
 
         if ($total_visits_today) {
             $visitsDailyModel
-                ->where('link_id', $link->id)
+                ->where('link_id', $link['id'])
                 ->where('date', date('Y-m-d'))
                 ->set(['visits' => $total_visits_today['visits'] + 1])
                 ->update();
         } else {
             $visitsDailyModel->insert([
-                'link_id' => $link->id,
+                'link_id' => $link['id'],
                 'date' => date('Y-m-d'),
                 'visits' => 1,
             ]);
@@ -144,25 +143,22 @@ class Home extends BaseController
 
     public function protected($shortcode)
     {
-        $db = \Config\Database::connect();
-        $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
-        $results = $query->getResult();
+        $linksModel = model('LinksModel');
+        $link = $linksModel->where('shortcode', $shortcode)->first();
 
-        if (count($results) == 0)
+        if (is_null($link))
             return redirect()->to('/')->with('message', 'Link not found.');
 
 
-        $link = $results[0];
-
-        if (empty($link->password))
-            return $this->saveVisitAndRedirect($link->content);
+        if (empty($link['password']))
+            return $this->saveVisitAndRedirect($link['content']);
 
         if ($this->request->is('post')) {
 
             $password = $this->request->getPost('password');
 
-            if (password_verify($password, $link->password)) {
-                return $this->saveVisitAndRedirect($link->content);
+            if (password_verify($password, $link['password'])) {
+                return $this->saveVisitAndRedirect($link['content']);
             } else {
                 return redirect()->back()->with('message', 'Incorrect password.');
             }
@@ -177,15 +173,12 @@ class Home extends BaseController
 
     public function share($shortcode)
     {
-        $db = \Config\Database::connect();
-        $query = $db->query("SELECT * FROM `links` WHERE `shortcode` LIKE '" . $shortcode . "' LIMIT 1");
-        $results = $query->getResult();
+        $linksModel = model('LinksModel');
+        $link = $linksModel->where('shortcode', $shortcode)->first();
 
-        if (count($results) == 0)
+
+        if (is_null($link))
             return redirect()->to('/')->with('message', 'Link not found.');
-
-
-        $link = $results[0];
 
         return view('share', [
             'link' => $link,

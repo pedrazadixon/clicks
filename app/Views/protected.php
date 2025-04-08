@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<?= form_open('p/' . $link->shortcode); ?>
+<?= form_open('p/' . $link['shortcode']); ?>
 
 <label class="mt-10 block mb-3 text-sm font-medium text-gray-900 dark:text-white">
     You are trying to access a protected link. Please enter the password to continue.
