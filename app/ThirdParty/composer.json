@@ -1,0 +1,6 @@
+{
+    "require": {
+        "matomo/device-detector": "^6.4",
+        "maxmind-db/reader": "^1.12"
+    }
+}
