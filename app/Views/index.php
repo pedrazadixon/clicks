@@ -70,7 +70,7 @@
 
     <?= form_open(base_url('generate')); ?>
 
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" x-data="{ expirationType: '<?= set_value('expiration_type', '') ?>' }">
 
         <template x-if="activeTab == 'url-tab' || activeTab == 'qr-tab'">
             <div>
@@ -145,14 +145,16 @@
                     </label>
                     <div class="relative mb-4">
                         <div class="flex">
-                            <select name="expiration_type" id="expiration_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select name="expiration_type" id="expiration_type" x-model="expirationType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value="" selected>No expiration</option>
                                 <option value="time" <?= set_value('expiration_type') == 'time' ? 'selected' : '' ?>>Time</option>
                                 <option value="visits" <?= set_value('expiration_type') == 'visits' ? 'selected' : '' ?>>Visits</option>
                             </select>
                         </div>
 
-                        <div class="hidden flex mt-2 max-w-sm gap-2" id="expiration-time">
+                        <div class="flex mt-2 max-w-sm gap-2"
+                            id="expiration-time"
+                            x-show="expirationType === 'time'">
                             <select name="expiration_after" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <?php foreach ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 24, 48, 72] as $value): ?>
                                     <option value="<?= $value ?>" <?= set_value('expiration_after') == $value ? 'selected' : '' ?>><?= $value ?></option>
@@ -169,7 +171,9 @@
 
                         </div>
 
-                        <div class="hidden flex mt-2 max-w-sm gap-2" id="expiration-visits">
+                        <div class="flex mt-2 max-w-sm gap-2"
+                            id="expiration-visits"
+                            x-show="expirationType === 'visits'">
                             <input type="number" name="expiration_visits" min="1" value="<?= empty(set_value('expiration_visits')) ? 3 : set_value('expiration_visits') ?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm w-full rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                             <input type="text" value="visits" disabled class="bg-gray-50 border border-gray-300 text-gray-900 text-sm w-full rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                         </div>
@@ -209,27 +213,6 @@
 
 
 <?= $this->section('before_close_body') ?>
-
-<script>
-    const expirationHandler = () => {
-        document.getElementById("expiration-time").classList.add("hidden");
-        document.getElementById("expiration-visits").classList.add("hidden");
-
-        if (document.getElementById("expiration_type").value == "time")
-            document.getElementById("expiration-time").classList.remove("hidden");
-
-        if (document.getElementById("expiration_type").value == "visits")
-            document.getElementById("expiration-visits").classList.remove("hidden");
-
-    }
-
-    document.getElementById("expiration_type").addEventListener("change", () => {
-        expirationHandler();
-    });
-
-    expirationHandler();
-</script>
-
 
 <script>
     (function() {
