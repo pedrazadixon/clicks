@@ -10,6 +10,12 @@
 
     <?= $this->include('partials/theme-checker') ?>
 
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
     <?= $this->renderSection('before_close_head', true) ?>
 </head>
 
