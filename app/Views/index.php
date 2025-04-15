@@ -16,11 +16,11 @@
                 <button
                     class="inline-block p-4"
                     :class="{
-                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'url-tab',
-                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'url-tab',
+                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'url',
+                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'url',
                     }"
                     type="button"
-                    x-on:click="activeTab = 'url-tab'"
+                    x-on:click="showTab('url')"
                     role="tab">
                     Short a URL
                 </button>
@@ -29,11 +29,11 @@
                 <button
                     class="inline-block p-4"
                     :class="{
-                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'qr-tab',
-                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'qr-tab',
+                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'qr',
+                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'qr',
                     }"
                     type="button"
-                    x-on:click="activeTab = 'qr-tab'"
+                    x-on:click="showTab('qr')"
                     role="tab">
                     QR Code
                 </button>
@@ -42,11 +42,11 @@
                 <button
                     class="inline-block p-4"
                     :class="{
-                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'note-tab',
-                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'note-tab',
+                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'note',
+                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'note',
                     }"
                     type="button"
-                    x-on:click="activeTab = 'note-tab'"
+                    x-on:click="showTab('note')"
                     role="tab">
                     Share a note
                 </button>
@@ -55,11 +55,11 @@
                 <button
                     class="inline-block p-4"
                     :class="{
-                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'linkgroup-tab',
-                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'linkgroup-tab',
+                        'border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500': activeTab === 'linkgroup',
+                        'border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300': activeTab !== 'linkgroup',
                     }"
                     type="button"
-                    x-on:click="activeTab = 'linkgroup-tab'"
+                    x-on:click="showTab('linkgroup')"
                     role="tab">
                     Link group
                 </button>
@@ -72,7 +72,7 @@
 
     <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" x-data="{ expirationType: '<?= set_value('expiration_type', '') ?>' }">
 
-        <template x-if="activeTab == 'url-tab' || activeTab == 'qr-tab'">
+        <template x-if="activeTab == 'url' || activeTab == 'qr'">
             <div>
                 <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
                     Shorten a long URL
@@ -83,12 +83,12 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961" />
                         </svg>
                     </div>
-                    <input type="url" autocomplete="off" name="url" :required="activeTab == 'url-tab' || activeTab == 'qr-tab'" value="<?= set_value('url') ?>" placeholder="https://example.com/my-long-url..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                    <input type="url" autocomplete="off" name="url" :required="activeTab == 'url' || activeTab == 'qr'" value="<?= set_value('url') ?>" placeholder="https://example.com/my-long-url..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                 </div>
             </div>
         </template>
 
-        <template x-if="activeTab == 'note-tab'">
+        <template x-if="activeTab == 'note'">
             <div>
                 <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
                     Share a note
@@ -100,14 +100,14 @@
         </template>
 
 
-        <div x-cloak x-show="activeTab == 'linkgroup-tab'">
+        <div x-cloak x-show="activeTab == 'linkgroup'">
             <p class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                 You need be logged in to create a link group.
             </p>
         </div>
 
 
-        <div data-accordion="collapse" x-show="activeTab == 'url-tab' || activeTab == 'qr-tab' || activeTab == 'note-tab'">
+        <div data-accordion="collapse" x-cloak x-show="activeTab == 'url' || activeTab == 'qr' || activeTab == 'note'">
             <h2 id="accordion-collapse-heading-1">
                 <?php $expanded = ! empty(array_diff(array_keys(validation_errors()), ['url'])) ? 'true' : 'false'; ?>
                 <button type="button" class="flex items-center w-full text-sm font-medium rtl:text-right text-gray-500 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="<?= $expanded ?>" aria-controls="accordion-collapse-body-1">
@@ -184,7 +184,7 @@
             </div>
         </div>
 
-        <div x-show="activeTab == 'url-tab' || activeTab == 'qr-tab' || activeTab == 'note-tab'">
+        <div x-show="activeTab == 'url' || activeTab == 'qr' || activeTab == 'note'">
             <?php if (count(validation_errors()) > 0): ?>
                 <div class="flex items-center p-4 mt-3 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
                     <div>
@@ -194,12 +194,12 @@
             <?php endif; ?>
         </div>
 
-        <div class="mt-3" x-show="activeTab == 'url-tab' || activeTab == 'qr-tab' || activeTab == 'note-tab'">
+        <div class="mt-3" x-cloak x-show="activeTab == 'url' || activeTab == 'qr' || activeTab == 'note'">
             <button name="submit" :value="activeTab" type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                <span x-show="activeTab == 'url-tab'">Shorten</span>
-                <span x-cloak x-show="activeTab == 'qr-tab'">Generate QR</span>
-                <span x-cloak x-show="activeTab == 'note-tab'">Share</span>
-                <span x-cloak x-show="activeTab == 'linkgroup-tab'">Create</span>
+                <span x-show="activeTab == 'url'">Shorten</span>
+                <span x-cloak x-show="activeTab == 'qr'">Generate QR</span>
+                <span x-cloak x-show="activeTab == 'note'">Share</span>
+                <span x-cloak x-show="activeTab == 'linkgroup'">Create</span>
             </button>
         </div>
 
@@ -217,9 +217,18 @@
 <script>
     (function() {
 
+        let defaultTab = 'url';
+
+        if (window.location.hash)
+            defaultTab = window.location.hash.substring(1);
+
         document.addEventListener('alpine:init', () => {
             Alpine.data('tabsApp', () => ({
-                activeTab: 'url-tab',
+                activeTab: defaultTab,
+                showTab(tab) {
+                    window.location.hash = tab;
+                    this.activeTab = tab;
+                },
             }));
         });
 
