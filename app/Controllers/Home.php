@@ -190,27 +190,16 @@ class Home extends BaseController
         if (! $this->request->is('post'))
             return $this->response->setStatusCode(405)->setBody('Method Not Allowed');
 
-        $rules = [
-            'url' => 'required|valid_url_strict[http,https]',
-            'shortcode' => 'permit_empty|alpha_dash|max_length[50]|min_length[4]|is_unique[links.shortcode]',
-            'password' => 'permit_empty|min_length[4]|max_length[150]',
-            'expiration_type' => 'permit_empty|in_list[time,visits]',
-            'expiration_after' => 'permit_empty|integer',
-            'expiration_unit' => 'permit_empty|in_list[minutes,hours,days,weeks,months]',
-            'expiration_visits' => 'permit_empty|integer',
-        ];
-
-        $messages = [
-            'shortcode' => [
-                'is_unique' => 'The shortcode already exists. Try another one.',
-            ],
-        ];
-
-        $data = $this->request->getPost(array_keys($rules));
-
-        if (! $this->validateData($data, $rules, $messages))
+        if (! $this->validateData($this->request->getPost(), 'form_rules'))
             return redirect()->to('/')->withInput();
 
+        if ($this->request->getPost('submit') === 'url' || $this->request->getPost('submit') === 'qr')
+            if (! $this->validateData($this->request->getPost(), 'url_rules'))
+                return redirect()->to('/')->withInput();
+
+        if ($this->request->getPost('submit') === 'note')
+            if (! $this->validateData($this->request->getPost(), 'note_rules'))
+                return redirect()->to('/')->withInput();
 
         $validData = $this->validator->getValidated();
 
@@ -229,7 +218,8 @@ class Home extends BaseController
         $db->transStart();
 
         $newData = [
-            'content' => $validData['url'],
+            'content' => $validData['content'],
+            'type' => $this->request->getPost('submit'),
             'shortcode' => null,
             'is_custom_shortcode' => ! empty($customShortcode),
         ];

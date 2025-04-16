@@ -41,4 +41,60 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
+
+    public array $form_rules = [
+        'submit' => 'required|in_list[url,qr,note]',
+    ];
+
+    public array $form_rules_errors = [
+        'submit' => [
+            'required' => 'Form unknown.',
+            'in_list' => 'Form unknown.',
+        ],
+    ];
+
+    private array $customize_rules = [
+        'shortcode' => 'permit_empty|alpha_dash|max_length[50]|min_length[4]|is_unique[links.shortcode]',
+        'password' => 'permit_empty|min_length[4]|max_length[150]',
+        'expiration_type' => 'permit_empty|in_list[time,visits]',
+        'expiration_after' => 'permit_empty|integer',
+        'expiration_unit' => 'permit_empty|in_list[minutes,hours,days,weeks,months]',
+        'expiration_visits' => 'permit_empty|integer',
+    ];
+
+    public array $url_rules = [];
+
+    public array $url_rules_errors = [
+        'shortcode' => [
+            'is_unique' => 'The shortcode already exists. Try another one.',
+        ],
+    ];
+
+    public array $note_rules = [];
+
+    public array $note_rules_errors = [
+        'shortcode' => [
+            'is_unique' => 'The shortcode already exists. Try another one.',
+        ],
+    ];
+
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->url_rules = array_merge(
+            [
+                'content' => 'required|valid_url_strict[http,https]',
+            ],
+            $this->customize_rules
+        );
+
+        $this->note_rules = array_merge(
+            [
+                'content' => 'required',
+            ],
+            $this->customize_rules
+        );
+    }
 }
