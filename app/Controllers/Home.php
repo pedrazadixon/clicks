@@ -22,10 +22,6 @@ class Home extends BaseController
         if (is_null($link))
             return redirect('/')->with('message', 'Link not found');
 
-        // check if the link has a password
-        if (!is_null($link['password']))
-            return redirect()->to('p/' . $shortcode);
-
         // check if the link is expired
         if ($link['expiration_type'] == 'time') {
             $expirationDate = date('Y-m-d H:i:s', strtotime($link['created_at'] . ' + ' . $link['expiration_after'] . ' ' . $link['expiration_unit']));
@@ -39,6 +35,10 @@ class Home extends BaseController
                 return redirect()->to('/')->with('message', 'Link expired');
             }
         }
+
+        // check if the link has a password
+        if (!is_null($link['password']))
+            return redirect()->to('p/' . $shortcode);
 
         return $this->saveVisitAndRedirect($link);
     }
