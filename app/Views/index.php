@@ -3,11 +3,65 @@
 
 <?= $this->section('before_close_head') ?>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<style>
+    html.dark .ql-toolbar .ql-stroke {
+        fill: none;
+        stroke: rgb(223, 223, 223);
+    }
+
+    html.dark .ql-toolbar .ql-fill {
+        fill: rgb(223, 223, 223);
+        stroke: none;
+    }
+
+    html.dark .ql-toolbar .ql-picker {
+        color: rgb(223, 223, 223);
+    }
+
+    html.dark .ql-toolbar .ql-picker .ql-picker-options {
+        background-color: rgb(75, 75, 75);
+    }
+
+    .ql-container.ql-snow,
+    .ql-toolbar.ql-snow {
+        border: none;
+    }
+
+    .ql-editor.ql-blank::before {
+        color: gray;
+    }
+
+    html.dark .ql-editor.ql-blank::before {
+        color: lightgray;
+    }
+
+    /* .ql-toolbar.ql-snow {
+        border-bottom: 1px rgba(115, 115, 115, 0.2) solid;
+    } */
+
+    .ql-editor {
+        min-height: 150px;
+    }
+
+    .ql-snow .ql-picker.ql-language {
+        width: 98px;
+    }
+
+    /* .noselection .ace_cursor {
+        color: transparent;
+    }
+
+    .ace_tooltip {
+        display: none !important;
+    } */
+</style>
 <?= $this->endSection() ?>
 
 
 <?= $this->section('content') ?>
-
 <div x-data="tabsApp">
 
     <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
@@ -48,7 +102,7 @@
                     type="button"
                     x-on:click="showTab('note')"
                     role="tab">
-                    Share a note
+                    Note or Code
                 </button>
             </li>
             <li role="presentation">
@@ -61,43 +115,124 @@
                     type="button"
                     x-on:click="showTab('linkgroup')"
                     role="tab">
-                    Link group
+                    Link Group
                 </button>
             </li>
         </ul>
     </div>
 
 
-    <?= form_open(base_url('generate')); ?>
+    <?= form_open(base_url('generate'), ['id' => 'primary-form']); ?>
 
     <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" x-data="{ expirationType: '<?= set_value('expiration_type', '') ?>' }">
 
-        <template x-if="activeTab == 'url' || activeTab == 'qr'">
-            <div>
-                <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                    Shorten a long URL
-                </label>
-                <div class="relative mb-3">
-                    <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961" />
-                        </svg>
-                    </div>
-                    <input type="url" autocomplete="off" name="content" :required="activeTab == 'url' || activeTab == 'qr'" value="<?= set_value('url') ?>" placeholder="https://example.com/my-long-url..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        <div v-cloak x-show="activeTab == 'url' || activeTab == 'qr'">
+            <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                Shorten a long URL
+            </label>
+            <div class="relative mb-3">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961" />
+                    </svg>
                 </div>
+                <input type="url" autocomplete="off" name="url" :required="activeTab == 'url' || activeTab == 'qr'" value="<?= set_value('url') ?>" placeholder="https://example.com/my-long-url..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
             </div>
-        </template>
+        </div>
 
-        <template x-if="activeTab == 'note'">
-            <div>
-                <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                    Share a note
-                </label>
-                <div class="relative mb-3">
-                    <textarea name="content" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+        <div x-cloak x-show="activeTab == 'note'">
+            <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                Share a note
+            </label>
+            <div class="relative mb-3 bg-gray-50 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white" style="overflow: auto;">
+
+                <div class="flex border-b border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+
+                    <select id="noteType" x-model="noteType" class="p-1 text-sm bg-gray-50 border-0 dark:bg-gray-700 text-gray-900 dark:text-gray-200 cursor-pointer" aria-label="Select note type">
+                        <option value="richtext">Rich Text</option>
+                        <option value="php">PHP</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="json">JSON</option>
+                        <option value="xml">XML</option>
+                    </select>
+
+                    <div id="toolbar">
+                        <!--[{ 'header': [1, 2, 3, 4, 5, 6, false] }]-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <select class="ql-header">
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                                <option value="6"></option>
+                                <option selected></option>
+                            </select>
+                        </span>
+
+                        <!--['bold', 'italic', 'underline', 'strike']-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
+
+                        <!--[{ 'color': [] }, { 'background': [] }]-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <select class="ql-color"></select>
+                            <select class="ql-background"></select>
+                        </span>
+
+                        <!--[{ 'script': 'sub'}, { 'script': 'super' }]-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-script" value="sub"></button>
+                            <button class="ql-script" value="super"></button>
+                        </span>
+
+                        <!--['blockquote']-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-blockquote"></button>
+                        </span>
+
+                        <!--[{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }, { 'direction': 'rtl' }, { 'align': [] }]-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-list" value="ordered"></button>
+                            <button class="ql-list" value="bullet"></button>
+                            <button class="ql-indent" value="-1"></button>
+                            <button class="ql-indent" value="+1"></button>
+                            <select class="ql-align">
+                                <option selected></option>
+                                <option value="center"></option>
+                                <option value="right"></option>
+                                <option value="justify"></option>
+                            </select>
+                        </span>
+
+                        <!--['formula', 'link']-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-formula"></button>
+                            <button class="ql-link"></button>
+                        </span>
+
+                        <!--['clean']-->
+                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                            <button class="ql-clean"></button>
+                        </span>
+
+                    </div>
+
                 </div>
+
+                <div x-cloak x-show="noteType == 'richtext'" id="note-editor"></div>
+                <div x-cloak x-show="noteType != 'richtext'" id="code-editor" class="w-full" style="min-height: 150px;">alert('Code editor is not available in this version. Please use the rich text codeEditor.');</div>
+
             </div>
-        </template>
+
+
+        </div>
 
 
         <div x-cloak x-show="activeTab == 'linkgroup'">
@@ -184,7 +319,7 @@
             </div>
         </div>
 
-        <div x-show="activeTab == 'url' || activeTab == 'qr' || activeTab == 'note'">
+        <div id="errors">
             <?php if (count(validation_errors()) > 0): ?>
                 <div class="flex items-center p-4 mt-3 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
                     <div>
@@ -195,7 +330,10 @@
         </div>
 
         <div class="mt-3" x-cloak x-show="activeTab == 'url' || activeTab == 'qr' || activeTab == 'note'">
-            <button name="submit" :value="activeTab" type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+
+            <input type="hidden" name="form_type" :value="activeTab" />
+
+            <button x-on:click="submitForm" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 <span x-show="activeTab == 'url'">Shorten</span>
                 <span x-cloak x-show="activeTab == 'qr'">Generate QR</span>
                 <span x-cloak x-show="activeTab == 'note'">Share</span>
@@ -208,32 +346,103 @@
     <?= form_close(); ?>
 
 </div>
-
 <?= $this->endSection() ?>
 
 
 <?= $this->section('before_close_body') ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.40.0/ace.min.js" type="text/javascript"></script>
 
 <script>
     (function() {
 
+        const quill = new Quill('#note-editor', {
+            modules: {
+                toolbar: '#toolbar'
+            },
+            placeholder: 'Write your note here...',
+            theme: 'snow'
+        });
+
         let defaultTab = 'url';
+        const defaultNoteType = "<?= set_value('note_type', 'richtext') ?>";
+
+        const codeEditor = ace.edit("code-editor");
+        codeEditor.setShowPrintMargin(false);
+        codeEditor.session.setMode("ace/mode/" + defaultNoteType);
+        codeEditor.setTheme(`ace/theme/${currentTheme == 'dark' ? 'monokai' : 'textmate'}`);
+        codeEditor.setOptions({
+            maxLines: Infinity,
+            wrap: true,
+        });
+
+        // codeEditor.setReadOnly(true);
+
+        window.addEventListener('clicks', function(e) {
+            if (e.detail.type == 'theme') {
+                codeEditor.setTheme(`ace/theme/${e.detail.value == 'dark' ? 'monokai' : 'textmate'}`);
+            }
+        });
+
+        document.getElementById('toolbar').prepend(document.getElementById('noteType'));
 
         if (window.location.hash)
             defaultTab = window.location.hash.substring(1);
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('tabsApp', () => ({
+                init() {
+                    this.$watch('noteType', (newValue) => {
+                        if (newValue !== 'richtext') {
+                            codeEditor.session.setMode("ace/mode/" + newValue);
+                        }
+                    });
+                },
                 activeTab: defaultTab,
+                noteType: defaultNoteType,
                 showTab(tab) {
                     window.location.hash = tab;
                     this.activeTab = tab;
+                    // this.$refs.errors.innerHTML = '';
+                    document.getElementById('errors').innerHTML = '';
+                    document.querySelector('input[name="url"]').value = '';
+                    quill.setText('');
+                    codeEditor.setValue('');
+                },
+                submitForm(e) {
+
+                    let form = e.target.closest('form');
+
+                    if (form.checkValidity() === false) {
+                        form.reportValidity();
+                        return;
+                    }
+
+
+                    if (this.activeTab == 'note') {
+                        if (this.noteType == 'richtext') {
+                            const editorContent = quill.getText();
+                            if (editorContent.trim() === '') {
+                                alert('Please write a note before submitting.');
+                                return;
+                            }
+
+                            const noteInput = document.createElement('input');
+                            noteInput.type = 'hidden';
+                            noteInput.name = 'note';
+                            noteInput.value = quill.getSemanticHTML();
+                            form.appendChild(noteInput);
+                        }
+                    }
+
+                    form.submit();
                 },
             }));
+
         });
+
+
+
 
     })();
 </script>
-
-
 <?= $this->endSection() ?>
