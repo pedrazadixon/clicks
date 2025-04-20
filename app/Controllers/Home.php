@@ -338,6 +338,9 @@ class Home extends BaseController
             return redirect()->back()->with('message', 'Error al generar el link 3');
         }
 
+        if ($formType === 'qr')
+            return redirect()->to('s/' . $finalShortcode . '?qr');
+
         return redirect()->to('s/' . $finalShortcode);
     }
 }
