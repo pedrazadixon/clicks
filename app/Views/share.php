@@ -1,17 +1,18 @@
 <?= $this->extend('default') ?>
 
+<?php $is_qr = array_key_exists('qr', request()->getGet()) ?>
+
 <!-- before_close_head -->
 <?= $this->section('before_close_head') ?>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.js" referrerpolicy="no-referrer"></script>
 <?= $this->endSection() ?>
 
+
 <!-- content -->
 <?= $this->section('content') ?>
+<div class="gap-3 p-4 md:flex <?= $is_qr ? 'flex flex-col' : '' ?>">
 
-<div class="gap-3 p-4 md:flex">
-
-    <div class="flex flex-col grow">
-
+    <div class="flex flex-col grow" style="<?= $is_qr ? 'order: 2;' : '' ?>">
         <div>
             <label for="short-url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Short URL</label>
         </div>
@@ -31,10 +32,12 @@
             </button>
         </div>
 
-        <div class="mt-3">
-            <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Long url</label>
-            <input type="text" id="small-input" value="<?= $link['content'] ?>" disabled readonly class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        </div>
+        <?php if ($link['type'] == 'url' || $link['type'] == 'qr'): ?>
+            <div class="mt-3">
+                <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Long url</label>
+                <input type="text" id="small-input" value="<?= $link['content'] ?>" disabled readonly class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+        <?php endif; ?>
 
         <div class="mt-3 flex">
 
@@ -66,20 +69,21 @@
         </div>
     </div>
 
-    <div class="flex justify-center mt-3 md:mt-0">
+    <div class="flex flex-col items-center mt-3 md:mt-0" style="<?= $is_qr ? 'order: 1;' : '' ?>">
         <div class="bg-white rounded-md p-2" style="width: fit-content;">
             <canvas id="qr-canvas"></canvas>
+        </div>
+        <div>
+            <button id="qr-download">descarga qr</button>
         </div>
     </div>
 
 </div>
-
-
 <?= $this->endSection() ?>
+
 
 <!-- before_close_body -->
 <?= $this->section('before_close_body') ?>
-
 <script>
     window.addEventListener('load', function() {
         const clipboard = FlowbiteInstances.getInstance('CopyClipboard', 'short-url');
@@ -112,11 +116,19 @@
             console.log(`Error: ${err}`);
         }
     });
+
+    document.getElementById('qr-download').addEventListener('click', function() {
+        const canvas = document.getElementById('qr-canvas');
+        const link = document.createElement('a');
+        link.download = 'qrcode_' + "<?= $link['shortcode'] ?>" + '.png';
+        link.href = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+        link.click();
+    });
 </script>
 
 <script>
     QRCode.toCanvas(document.getElementById('qr-canvas'), '<?= base_url($link['shortcode']) ?>', {
-        width: 200,
+        width: <?= $is_qr ? 300 : 200 ?>,
         margin: 0.3,
         color: {
             dark: "#101828",
@@ -126,5 +138,4 @@
         if (error) console.error(error)
     })
 </script>
-
 <?= $this->endSection() ?>
