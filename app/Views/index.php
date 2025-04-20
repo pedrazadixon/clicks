@@ -148,19 +148,47 @@
 
                 <div class="flex border-b border-gray-300 dark:bg-gray-700 dark:border-gray-600">
 
-                    <select id="noteType" x-model="noteType" class="p-1 text-sm bg-gray-50 border-0 dark:bg-gray-700 text-gray-900 dark:text-gray-200 cursor-pointer" aria-label="Select note type">
-                        <option value="richtext">Rich Text</option>
-                        <option value="php">PHP</option>
-                        <option value="html">HTML</option>
+                    <select id="noteType" name="note_type" x-model="noteType" class="p-1 text-sm bg-gray-50 border-0 dark:bg-gray-700 text-gray-900 dark:text-gray-200 cursor-pointer" aria-label="Select note type">
+                        <option value="rich_text">Rich Text</option>
+                        <option value="abap">ABAP</option>
+                        <option value="ada">Ada</option>
+                        <option value="assembly_x86">Assembly x86</option>
+                        <option value="c_cpp">C/C++</option>
+                        <option value="clojure">Clojure</option>
+                        <option value="cobol">COBOL</option>
+                        <option value="csharp">C#</option>
                         <option value="css">CSS</option>
+                        <option value="dart">Dart</option>
+                        <option value="erlang">Erlang</option>
+                        <option value="fortran">Fortran</option>
+                        <option value="golang">Go</option>
+                        <option value="groovy">Groovy</option>
+                        <option value="haskell">Haskell</option>
+                        <option value="html">HTML</option>
+                        <option value="java">Java</option>
                         <option value="javascript">JavaScript</option>
                         <option value="json">JSON</option>
+                        <option value="kotlin">Kotlin</option>
+                        <option value="lua">Lua</option>
+                        <option value="matlab">MATLAB</option>
+                        <option value="objectivec">Objective-C</option>
+                        <option value="pascal">Pascal</option>
+                        <option value="perl">Perl</option>
+                        <option value="php">PHP</option>
+                        <option value="powershell">PowerShell</option>
+                        <option value="python">Python</option>
+                        <option value="r">R</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="rust">Rust</option>
+                        <option value="scala">Scala</option>
+                        <option value="swift">Swift</option>
+                        <option value="typescript">TypeScript</option>
                         <option value="xml">XML</option>
+                        <option value="text">Other</option>
                     </select>
 
                     <div id="toolbar">
-                        <!--[{ 'header': [1, 2, 3, 4, 5, 6, false] }]-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <select class="ql-header">
                                 <option value="1"></option>
                                 <option value="2"></option>
@@ -172,33 +200,28 @@
                             </select>
                         </span>
 
-                        <!--['bold', 'italic', 'underline', 'strike']-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-bold"></button>
                             <button class="ql-italic"></button>
                             <button class="ql-underline"></button>
                             <button class="ql-strike"></button>
                         </span>
 
-                        <!--[{ 'color': [] }, { 'background': [] }]-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <select class="ql-color"></select>
                             <select class="ql-background"></select>
                         </span>
 
-                        <!--[{ 'script': 'sub'}, { 'script': 'super' }]-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-script" value="sub"></button>
                             <button class="ql-script" value="super"></button>
                         </span>
 
-                        <!--['blockquote']-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-blockquote"></button>
                         </span>
 
-                        <!--[{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }, { 'direction': 'rtl' }, { 'align': [] }]-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-list" value="ordered"></button>
                             <button class="ql-list" value="bullet"></button>
                             <button class="ql-indent" value="-1"></button>
@@ -211,14 +234,12 @@
                             </select>
                         </span>
 
-                        <!--['formula', 'link']-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-formula"></button>
                             <button class="ql-link"></button>
                         </span>
 
-                        <!--['clean']-->
-                        <span class="ql-formats" x-show="noteType == 'richtext'">
+                        <span class="ql-formats" x-show="noteType == 'rich_text'">
                             <button class="ql-clean"></button>
                         </span>
 
@@ -226,11 +247,10 @@
 
                 </div>
 
-                <div x-cloak x-show="noteType == 'richtext'" id="note-editor"></div>
-                <div x-cloak x-show="noteType != 'richtext'" id="code-editor" class="w-full" style="min-height: 150px;">alert('Code editor is not available in this version. Please use the rich text codeEditor.');</div>
+                <div x-cloak x-show="noteType == 'rich_text'" id="note-editor"></div>
+                <div x-cloak x-show="noteType != 'rich_text'" id="code-editor" class="w-full" style="min-height: 150px;"></div>
 
             </div>
-
 
         </div>
 
@@ -364,9 +384,10 @@
         });
 
         let defaultTab = 'url';
-        const defaultNoteType = "<?= set_value('note_type', 'richtext') ?>";
+        const defaultNoteType = "<?= set_value('note_type', 'rich_text') ?>";
 
         const codeEditor = ace.edit("code-editor");
+        codeEditor.session.setUseWorker(false)
         codeEditor.setShowPrintMargin(false);
         codeEditor.session.setMode("ace/mode/" + defaultNoteType);
         codeEditor.setTheme(`ace/theme/${currentTheme == 'dark' ? 'monokai' : 'textmate'}`);
@@ -392,7 +413,7 @@
             Alpine.data('tabsApp', () => ({
                 init() {
                     this.$watch('noteType', (newValue) => {
-                        if (newValue !== 'richtext') {
+                        if (newValue !== 'rich_text') {
                             codeEditor.session.setMode("ace/mode/" + newValue);
                         }
                     });
@@ -402,7 +423,6 @@
                 showTab(tab) {
                     window.location.hash = tab;
                     this.activeTab = tab;
-                    // this.$refs.errors.innerHTML = '';
                     document.getElementById('errors').innerHTML = '';
                     document.querySelector('input[name="url"]').value = '';
                     quill.setText('');
@@ -410,28 +430,35 @@
                 },
                 submitForm(e) {
 
-                    let form = e.target.closest('form');
+                    const form = e.target.closest('form');
 
                     if (form.checkValidity() === false) {
                         form.reportValidity();
                         return;
                     }
 
-
                     if (this.activeTab == 'note') {
-                        if (this.noteType == 'richtext') {
+
+                        const contentInput = document.createElement('input');
+                        contentInput.type = 'hidden';
+                        contentInput.name = 'content';
+
+                        if (this.noteType == 'rich_text') {
                             const editorContent = quill.getText();
                             if (editorContent.trim() === '') {
                                 alert('Please write a note before submitting.');
                                 return;
                             }
-
-                            const noteInput = document.createElement('input');
-                            noteInput.type = 'hidden';
-                            noteInput.name = 'note';
-                            noteInput.value = quill.getSemanticHTML();
-                            form.appendChild(noteInput);
+                            contentInput.value = quill.getSemanticHTML();
+                        } else {
+                            const codeContent = codeEditor.getValue();
+                            if (codeContent.trim() === '') {
+                                alert('Please white any code before submitting.');
+                                return;
+                            }
+                            contentInput.value = codeContent;
                         }
+                        form.appendChild(contentInput);
                     }
 
                     form.submit();
@@ -439,9 +466,6 @@
             }));
 
         });
-
-
-
 
     })();
 </script>
