@@ -57,6 +57,9 @@ class Home extends BaseController
             case 'url':
                 return $this->saveVisitAndRedirect($link);
                 break;
+            case 'qr':
+                return $this->saveVisitAndRedirect($link);
+                break;
             case 'note':
                 return $this->saveVisitAndShowNote($link);
                 break;
