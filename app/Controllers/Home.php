@@ -37,16 +37,44 @@ class Home extends BaseController
         }
 
         // check if the link has a password
-        if (!is_null($link['password']))
-            return redirect()->to('p/' . $shortcode);
+        if (!is_null($link['password'])) {
+            if ($this->request->is('get')) {
+                helper(['form']);
+                return view('protected', ['link' => $link]);
+            }
+        }
 
-        return $this->saveVisitAndRedirect($link);
+        if (!is_null($link['password'])) {
+            if ($this->request->is('post')) {
+                $password = $this->request->getPost('password');
+                if (! password_verify($password, $link['password'])) {
+                    return redirect()->back()->with('message', 'Incorrect password.');
+                }
+            }
+        }
+
+        switch ($link['type']) {
+            case 'url':
+                return $this->saveVisitAndRedirect($link);
+                break;
+            case 'note':
+                return $this->saveVisitAndShowNote($link);
+                break;
+            default:
+                return redirect('/')->with('message', 'Invalid link type');
+                break;
+        }
+    }
+
+    public function saveVisitAndShowNote($link)
+    {
+        $this->saveVisit($link);
+        return view('note', ['link' => $link]);
     }
 
     public function saveVisitAndRedirect($link)
     {
         $this->saveVisit($link);
-
         return redirect()->to($link['content']);
     }
 
@@ -193,15 +221,21 @@ class Home extends BaseController
         if (! $this->validateData($this->request->getPost(), 'form_rules'))
             return redirect()->to('/')->withInput();
 
-        if ($this->request->getPost('submit') === 'url' || $this->request->getPost('submit') === 'qr')
+        $formType = $this->request->getPost('form_type');
+
+        if ($formType === 'url' || $formType === 'qr')
             if (! $this->validateData($this->request->getPost(), 'url_rules'))
                 return redirect()->to('/')->withInput();
 
-        if ($this->request->getPost('submit') === 'note')
+        if ($formType === 'note')
             if (! $this->validateData($this->request->getPost(), 'note_rules'))
                 return redirect()->to('/')->withInput();
 
         $validData = $this->validator->getValidated();
+
+        if ($formType === 'url' || $formType === 'qr') {
+            $validData['content'] = $this->request->getPost('url');
+        }
 
         $customShortcode = $validData['shortcode'] ?? null;
 
@@ -219,10 +253,14 @@ class Home extends BaseController
 
         $newData = [
             'content' => $validData['content'],
-            'type' => $this->request->getPost('submit'),
+            'type' => $formType,
             'shortcode' => null,
             'is_custom_shortcode' => ! empty($customShortcode),
         ];
+
+        if ($formType === 'note') {
+            $newData['language'] = $validData['note_type'];
+        }
 
         if (! empty($validData['password']))
             $newData['password'] = password_hash($validData['password'], PASSWORD_BCRYPT);

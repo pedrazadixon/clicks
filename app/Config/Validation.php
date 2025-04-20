@@ -43,11 +43,11 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
 
     public array $form_rules = [
-        'submit' => 'required|in_list[url,qr,note]',
+        'form_type' => 'required|in_list[url,qr,note]',
     ];
 
     public array $form_rules_errors = [
-        'submit' => [
+        'form_type' => [
             'required' => 'Form unknown.',
             'in_list' => 'Form unknown.',
         ],
@@ -85,7 +85,7 @@ class Validation extends BaseConfig
 
         $this->url_rules = array_merge(
             [
-                'content' => 'required|valid_url_strict[http,https]',
+                'url' => 'required|valid_url_strict[http,https]',
             ],
             $this->customize_rules
         );
@@ -93,6 +93,7 @@ class Validation extends BaseConfig
         $this->note_rules = array_merge(
             [
                 'content' => 'required',
+                'note_type' => 'required|in_list[abap,ada,assembly_x86,c_cpp,clojure,cobol,csharp,css,dart,erlang,fortran,golang,groovy,haskell,html,java,javascript,json,kotlin,lua,matlab,objectivec,other,pascal,perl,php,powershell,python,r,rich_text,ruby,rust,scala,swift,typescript,xml]',
             ],
             $this->customize_rules
         );
