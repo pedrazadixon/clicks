@@ -389,7 +389,7 @@
         const codeEditor = ace.edit("code-editor");
         codeEditor.session.setUseWorker(false)
         codeEditor.setShowPrintMargin(false);
-        codeEditor.session.setMode("ace/mode/" + defaultNoteType);
+        codeEditor.session.setMode("ace/mode/" + (defaultNoteType == 'rich_text' ? 'text' : defaultNoteType));
         codeEditor.setTheme(`ace/theme/${currentTheme == 'dark' ? 'monokai' : 'textmate'}`);
         codeEditor.setOptions({
             maxLines: Infinity,
