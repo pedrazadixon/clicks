@@ -5,6 +5,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/6.3.7/animations/shift-away.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
     html.dark .ql-toolbar .ql-stroke {
@@ -57,6 +58,15 @@
     .ace_tooltip {
         display: none !important;
     } */
+
+    .tippy-box[data-theme~='error'] {
+        background-color: red;
+        color: white;
+    }
+
+    .tippy-box[data-theme~='error']>.tippy-arrow {
+        color: red;
+    }
 </style>
 <?= $this->endSection() ?>
 
@@ -144,7 +154,7 @@
             <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
                 Share a note
             </label>
-            <div class="relative mb-3 bg-gray-50 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white" style="overflow: auto;">
+            <div id="note-container" class="relative mb-3 bg-gray-50 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white" style="overflow: auto;">
 
                 <div class="flex border-b border-gray-300 dark:bg-gray-700 dark:border-gray-600">
 
@@ -372,6 +382,11 @@
 <?= $this->section('before_close_body') ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.40.0/ace.min.js" type="text/javascript"></script>
 
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
+
+
 <script>
     (function() {
 
@@ -381,6 +396,19 @@
             },
             placeholder: 'Write your note here...',
             theme: 'snow'
+        });
+
+        const noteTooltip = tippy('#note-container', {
+            content: "Please write something in the editor.",
+            arrow: true,
+            placement: 'bottom',
+            animation: 'shift-away',
+            trigger: 'manual',
+            theme: 'error',
+        });
+
+        quill.on('text-change', function(delta, oldDelta, source) {
+            noteTooltip[0].hide();
         });
 
         let defaultTab = 'url';
@@ -396,7 +424,9 @@
             wrap: true,
         });
 
-        // codeEditor.setReadOnly(true);
+        codeEditor.on('change', function(e) {
+            noteTooltip[0].hide();
+        });
 
         window.addEventListener('clicks', function(e) {
             if (e.detail.type == 'theme') {
@@ -413,6 +443,7 @@
             Alpine.data('tabsApp', () => ({
                 init() {
                     this.$watch('noteType', (newValue) => {
+                        noteTooltip[0].hide();
                         if (newValue !== 'rich_text') {
                             codeEditor.session.setMode("ace/mode/" + newValue);
                         }
@@ -446,14 +477,14 @@
                         if (this.noteType == 'rich_text') {
                             const editorContent = quill.getText();
                             if (editorContent.trim() === '') {
-                                alert('Please write a note before submitting.');
+                                noteTooltip[0].show();
                                 return;
                             }
                             contentInput.value = quill.getSemanticHTML();
                         } else {
                             const codeContent = codeEditor.getValue();
                             if (codeContent.trim() === '') {
-                                alert('Please white any code before submitting.');
+                                noteTooltip[0].show();
                                 return;
                             }
                             contentInput.value = codeContent;
