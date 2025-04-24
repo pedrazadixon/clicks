@@ -134,7 +134,7 @@
 
     <?= form_open(base_url('generate'), ['id' => 'primary-form']); ?>
 
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" x-data="{ expirationType: '<?= set_value('expiration_type', '') ?>' }">
+    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
 
         <div v-cloak x-show="activeTab == 'url' || activeTab == 'qr'">
             <label for="email-address-icon" class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
@@ -436,8 +436,14 @@
 
         document.getElementById('toolbar').prepend(document.getElementById('noteType'));
 
-        if (window.location.hash)
-            defaultTab = window.location.hash.substring(1);
+        if (window.location.hash) {
+            const hash = window.location.hash.substring(1);
+            if (hash == 'url' || hash == 'qr' || hash == 'note' || hash == 'linkgroup') {
+                defaultTab = hash;
+            } else {
+                defaultTab = 'url';
+            }
+        }
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('tabsApp', () => ({
@@ -451,6 +457,7 @@
                 },
                 activeTab: defaultTab,
                 noteType: defaultNoteType,
+                expirationType: '<?= set_value('expiration_type', '') ?>',
                 showTab(tab) {
                     window.location.hash = tab;
                     this.activeTab = tab;
