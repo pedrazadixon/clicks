@@ -53,7 +53,7 @@
             </div>
         <?php endif; ?>
 
-        <div class="mt-3 flex">
+        <div class="flex my-3">
 
             <button id="share-button" type="button" class="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -87,9 +87,9 @@
         <div class="bg-white rounded-md p-2" style="width: fit-content;">
             <canvas id="qr-canvas"></canvas>
         </div>
-        <div>
-            <button id="qr-download">descarga qr</button>
-        </div>
+        <button id="qr-download" style="max-width: 216px;" class="w-full text-white mt-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center">
+            Descargar QR
+        </button>
     </div>
 
 </div>
