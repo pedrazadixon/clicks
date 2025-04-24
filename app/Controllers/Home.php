@@ -226,9 +226,16 @@ class Home extends BaseController
 
         $formType = $this->request->getPost('form_type');
 
-        if ($formType === 'url' || $formType === 'qr')
+        if ($formType === 'url' || $formType === 'qr') {
             if (! $this->validateData($this->request->getPost(), 'url_rules'))
                 return redirect()->to('/')->withInput();
+
+            $baseDomainConfigured = parse_url(config('App')->baseURL, PHP_URL_HOST);
+            $baseDomainRequested = parse_url($this->request->getPost('url'), PHP_URL_HOST);
+
+            if (str_contains($baseDomainRequested, $baseDomainConfigured))
+                return redirect()->to('/')->with('message', 'Cannot create a link of this domain');
+        }
 
         if ($formType === 'note')
             if (! $this->validateData($this->request->getPost(), 'note_rules'))
@@ -241,6 +248,9 @@ class Home extends BaseController
         }
 
         $customShortcode = $validData['shortcode'] ?? null;
+
+
+
 
         $db = \Config\Database::connect();
 
