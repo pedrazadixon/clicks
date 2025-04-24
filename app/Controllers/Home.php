@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\ThirdParty\Base62Converter;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use DeviceDetector\DeviceDetector;
 use MaxMind\Db\Reader;
 
@@ -20,7 +21,7 @@ class Home extends BaseController
         $link = $linksModel->where('shortcode', $shortcode)->first();
 
         if (is_null($link))
-            return redirect('/')->with('message', 'Link not found');
+            throw PageNotFoundException::forPageNotFound();
 
         // check if the link is expired
         if ($link['expiration_type'] == 'time') {
@@ -178,7 +179,7 @@ class Home extends BaseController
         $link = $linksModel->where('shortcode', $shortcode)->first();
 
         if (is_null($link))
-            return redirect()->to('/')->with('message', 'Link not found.');
+            throw PageNotFoundException::forPageNotFound();
 
 
         if (empty($link['password']))
@@ -209,7 +210,7 @@ class Home extends BaseController
 
 
         if (is_null($link))
-            return redirect()->to('/')->with('message', 'Link not found.');
+            throw PageNotFoundException::forPageNotFound();
 
         return view('share', [
             'link' => $link,
