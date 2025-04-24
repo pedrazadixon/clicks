@@ -17,19 +17,33 @@
             <label for="short-url" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Short URL</label>
         </div>
 
-        <div class="grid grid-cols-8 gap-2 w-full">
-            <input id="short-url" type="text" class="p-3 text-base col-span-6 bg-gray-50 border border-gray-300 text-gray-500  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500" value="<?= base_url($link['shortcode']) ?>" disabled readonly>
-            <button data-copy-to-clipboard-target="short-url" class="col-span-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center">
-                <span id="default-message">Copy</span>
-                <span id="success-message" class="hidden">
-                    <div class="inline-flex items-center">
-                        <svg class="w-3 h-3 text-white me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
-                        </svg>
-                        Copied!
-                    </div>
-                </span>
-            </button>
+        <div class="flex gap-2 w-full flex-col md:flex-row">
+            <input id="short-url" type="text" class="p-3 text-base font-semibold bg-gray-50 border border-gray-300 text-gray-500 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500" value="<?= base_url($link['shortcode']) ?>" disabled readonly>
+
+
+            <div class="flex gap-2">
+                <button data-copy-to-clipboard-target="short-url" class="grow text-white px-8 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center">
+                    <span id="default-message">Copy</span>
+                    <span id="success-message" class="hidden">
+                        <div class="inline-flex items-center">
+                            <svg class="w-3 h-3 text-white me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+                            </svg>
+                            Copied!
+                        </div>
+                    </span>
+                </button>
+
+                <a href="<?= base_url($link['shortcode']) ?>" target="_blank" class="flex-none text-white px-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+                        <path d="M11 13l9 -9" />
+                        <path d="M15 4h5v5" />
+                    </svg>
+                </a>
+            </div>
+
         </div>
 
         <?php if ($link['type'] == 'url' || $link['type'] == 'qr'): ?>
