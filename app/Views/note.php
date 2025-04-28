@@ -24,7 +24,7 @@
 <?= $this->section('content') ?>
 <?php if ($link["language"] === 'rich_text') : ?>
     <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Note content</h4>
-    <div id="host" style="white-space: normal;" class="ql-editor mb-6 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></div>
+    <div id="host" style="white-space: normal;" class="overflow-x-auto ql-editor mb-6 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></div>
 <?php endif ?>
 
 <?php if ($link["language"] !== 'rich_text') : ?>
